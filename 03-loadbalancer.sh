@@ -3,22 +3,7 @@ set -eou pipefail
 . ./.env
 
 # Service with Azure DNS label annotation -> ${FQDN}
-cat <<YAML | k apply -n web -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  annotations:
-    service.beta.kubernetes.io/azure-dns-label-name: "${DNS_LABEL}"
-spec:
-  type: LoadBalancer
-  selector:
-    app: nginx
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-YAML
+k apply -n web -f 03-loadbalancer.yaml
 
 # Wait for external IP
 echo "Waiting for external IP..."
