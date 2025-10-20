@@ -4,5 +4,5 @@ set -eou pipefail
 
 k apply -f 02-web.yaml
 
-k -n web rollout status deploy/nginx --timeout=120s
-k -n web get pods -l app=nginx -o wide
+k -n web rollout status deploy/planet --timeout=120s
+k -n web get pods -l app=planet -o wide

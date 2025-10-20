@@ -6,14 +6,14 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: planet
   namespace: web
 spec:
   replicas: 3
-  selector: { matchLabels: { app: nginx } }
+  selector: { matchLabels: { app: planet } }
   template:
     metadata:
-      labels: { app: nginx }
+      labels: { app: planet }
     spec:
       containers:
         - name: nginx
@@ -56,3 +56,15 @@ spec:
               </html>
               EOF
               nginx -g 'daemon off;'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: planet
+  namespace: web
+spec:
+  type: ClusterIP
+  selector: { app: planet }
+  ports:
+    - port: 80
+      targetPort: 80

@@ -8,7 +8,7 @@ envsubst < 03-loadbalancer.yaml | k apply -f -
 # Wait for external IP
 echo "Waiting for external IP..."
 for i in $(seq 1 60); do
-  EXTERNAL_IP="$(k -n web get svc/nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)"
+  EXTERNAL_IP="$(k -n web get svc/planet -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)"
   [ -n "${EXTERNAL_IP:-}" ] && break
   echo "Retrying ${i}/60"
   sleep 5
@@ -37,7 +37,7 @@ done
 echo "HTTP 200 from http://${FQDN}/"
 
 # Endpoints should show two targets
-k -n web get endpoints nginx -o wide
+k -n web get endpoints planet -o wide
 
 # Curl the service repeatedly and extract the Pod line
 echo "Sampling responses from http://${FQDN}/"
