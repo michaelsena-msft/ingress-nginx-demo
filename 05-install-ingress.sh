@@ -12,7 +12,7 @@ curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-
 patch -i 05-ingress-nginx.patch ingress-nginx.yaml
 
 # Apply ingress-nginx manifest with DNS label substitution
-envsubst < 05-ingress-nginx.yaml | k apply -f -
+envsubst < ingress-nginx.yaml | k apply -f -
 
 # Wait for ingress-nginx deployment to be ready
 echo "Waiting for ingress-nginx-controller deployment..."
