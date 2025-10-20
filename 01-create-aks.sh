@@ -9,7 +9,7 @@ az aks create \
   --location "$LOC" \
   --enable-managed-identity \
   --node-count 1 \
-  --node-vm-size Standard_B2s
+  --node-vm-size Standard_D4s_v3
 
 # Verify
 az aks show -g "$RG" -n "$CLUSTER" --query "provisioningState" -o tsv | grep -x Succeeded
