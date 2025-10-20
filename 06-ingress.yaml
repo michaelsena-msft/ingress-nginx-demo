@@ -9,8 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: '${FQDN}'
-      http:
+    - http:
         paths:
           - path: /jupiter
             pathType: Prefix
