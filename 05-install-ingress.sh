@@ -5,11 +5,8 @@ set -eou pipefail
 # Delete the existing load balancer if it exists.
 k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
 
-# Download the Azure ingress-nginx deployment (see: https://kubernetes.github.io/ingress-nginx/deploy/#azure)
-curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml
-
-# Apply the patch to have an Azure entry point.
-patch -i 05-ingress-nginx.patch ingress-nginx.yaml
+# Retrieve the ingress-nginx YAML
+./get-ingress-yaml.sh
 
 # Apply ingress-nginx manifest with DNS label substitution
 envsubst < ingress-nginx.yaml | k apply -f -
