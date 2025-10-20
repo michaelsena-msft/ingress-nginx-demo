@@ -6,7 +6,7 @@ set -eou pipefail
 k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
 
 # Retrieve the ingress-nginx YAML
-./get-ingress-yaml.sh
+./configure-ingress-yaml.sh
 
 # Apply ingress-nginx manifest with DNS label substitution
 envsubst < ingress-nginx.yaml | k apply -f -
