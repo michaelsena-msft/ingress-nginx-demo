@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eou pipefail
+[ -f ./.env ] && . ./.env || . ../.env
 
 # Download the Azure ingress-nginx deployment (see: https://kubernetes.github.io/ingress-nginx/deploy/#azure)
 curl -o ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml
