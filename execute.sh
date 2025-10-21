@@ -21,4 +21,4 @@ log "## Step 6: Configuring Ingress routes..."
 ./06-configure-ingress.sh
 
 log "## Step 7: Replace the image with our own..."
-07-replace-image.sh
+./07-replace-image.sh
