@@ -18,3 +18,6 @@ echo "## Step 5: Installing Ingress Controller..."
 
 echo "## Step 6: Configuring Ingress routes..."
 ./06-configure-ingress.sh
+
+echo "## Step 7: Replace the image with our own..."
+07-replace-image.sh
