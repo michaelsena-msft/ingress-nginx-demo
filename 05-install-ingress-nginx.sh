@@ -13,7 +13,7 @@ k delete --ignore-not-found=true --wait=true --now=true svc nginx -n web
 
 
 # Wait for external IP
-log "Waiting for external IP..."
+log Waiting for external IP
 for i in $(seq 1 60); do
   EXTERNAL_IP="$(k -n ingress-nginx get svc/ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' || true)"
   [ -n "${EXTERNAL_IP:-}" ] && break
@@ -23,7 +23,7 @@ done
 log "Ingress controller IP: $EXTERNAL_IP"
 
 # Verify DNS resolves to the IP
-echo "Waiting for ${FQDN} to resolve..."
+echo Waiting for ${FQDN} to resolve
 for i in $(seq 1 60); do
   RESOLVED_IPS="$(getent ahostsv4 "$FQDN" | awk '{print $1}' | sort -u || true)"
   echo "$RESOLVED_IPS" | grep -q "$EXTERNAL_IP" && break
@@ -32,7 +32,7 @@ done
 log "$RESOLVED_IPS" | grep -q "$EXTERNAL_IP"
 
 # Verify ingress controller is responding
-log "Verifying ingress controller..."
+log Verifying ingress controller
 for i in $(seq 1 60); do
   STATUS="$(curl -s -o /dev/null -w "%{http_code}" "http://${FQDN}/" || true)"
   [ "$STATUS" = "404" ] && break
