@@ -2,26 +2,23 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-# Get details of the current image
-DEFAULT_IMAGE=$(grep -o '^-\W\+image:.*$' ./patches/controller-image.patch | awk '{print $3}')
-log Default Image: ${DEFAULT_IMAGE}
-
 # Pull it
-log Pulling ${DEFAULT_IMAGE}
-docker pull ${DEFAULT_IMAGE}
+DEFAULT_LABEL="${DEFAULT_REPOSITORY}:${DEFAULT_TAG}"
+log Pulling default image ${DEFAULT_LABEL}
+docker pull ${DEFAULT_LABEL}
+
+ALT_REPOSITORY="${ACR_FQDN}/${DEFAULT_REPOSITORY}"
+ALT_VERSION="${DEFAULT_TAG}"
 
 # Tag it
-ALT_IMAGE=$(echo ${DEFAULT_IMAGE} | sed -e "s/registry.k8s.io/${ACR_FQDN}/g; s/@.\+//g")
-log Alt Image: ${ALT_IMAGE}
+log Tagging image
+docker tag ${DEFAULT_LABEL} ${ALT_REPOSITORY}:${ALT_VERSION}
 
-docker tag ${DEFAULT_IMAGE} ${ALT_IMAGE}
-docker push ${ALT_IMAGE}
+log Pushing
+docker push ${ALT_REPOSITORY}:${ALT_VERSION}
 
 # Make sure the file exists
-./operations/configure.sh ${ALT_IMAGE}
-
-# Apply ingress
-./operations/apply.sh
+./operations/configure-nginx-ingress.sh ${ALT_REPOSITORY} ${ALT_VERSION} Always
 
 # Verify its still working
 ./operations/verify.sh

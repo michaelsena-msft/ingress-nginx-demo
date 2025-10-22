@@ -3,10 +3,21 @@ set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
 log Creating the resource group
-az group create -n "$RESOURCE_GROUP" -l "$REGION"
+az group create \
+  -n "$RESOURCE_GROUP" \
+  -l "$REGION" \
+  --only-show-errors \
+  -o table
 
 log Creating the ACR
-az acr create --admin-enabled true --sku standard -g "$RESOURCE_GROUP" -l "$REGION" -n "$ACR_NAME" --only-show-errors
+az acr create \
+  --admin-enabled true \
+  --sku standard \
+  -g "$RESOURCE_GROUP" \
+  -l "$REGION" \
+  -n "$ACR_NAME" \
+  --only-show-errors \
+  -o table
 
 log Creating the cluster
 az aks create \
@@ -16,7 +27,8 @@ az aks create \
   --node-count 1 \
   --node-vm-size Standard_D4s_v3 \
   --attach-acr $ACR_NAME \
-  --only-show-errors
+  --only-show-errors \
+   -o table
 
 # Setup environment.
 ./local-env.sh

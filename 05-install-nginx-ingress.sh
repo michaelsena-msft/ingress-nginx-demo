@@ -2,20 +2,7 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-# Note: Helm must be v3.18.4 (see: https://docs.nginx.com/nginx-ingress-controller/installation/installing-nic/installation-with-helm/#before-you-begin)
-# Or install...
-log Performing Helm
-helm upgrade nginx-ingress-release oci://ghcr.io/nginx/charts/nginx-ingress \
-  --version 2.3.1 \
-  --create-namespace \
-  --atomic \
-  --enable-dns \
-  --dependency-update \
-  --install \
-  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${DNS_LABEL}"
-
-#log Upgrading CRDs
-#k apply -f https://raw.githubusercontent.com/nginx/kubernetes-ingress/v5.2.1/deploy/crds.yaml
+./operations/configure-nginx-ingress.sh
 
 # Wait for external IP
 log Waiting for external IP
@@ -40,8 +27,14 @@ info $RESOLVED_IPS
 log Verifying ingress controller
 for i in $(seq 1 60); do
   STATUS="$(curl -s -o /dev/null -w "%{http_code}" "http://${FQDN}/" || true)"
-  [ "$STATUS" = "404" ] && break
+  [ "$STATUS" = "404" ] || [ "$STATUS" = "200" ] && break
   sleep 5
 done
-[ "$STATUS" = "404" ] || { echo "Expected HTTP 404 from ingress controller"; exit 1; }
-info "Ingress controller responding with HTTP 404 (expected - no ingress rules yet)"
+if [ "$STATUS" = "404" ]; then
+  info "Ingress controller returned HTTP 404 (expected if no default backend configured)"
+elif [ "$STATUS" = "200" ]; then
+  info "Ingress controller returned HTTP 200 (expected if default backend configured)"
+else
+  echo "Unexpected HTTP status from ingress controller: $STATUS"
+  exit 1
+fi

@@ -20,8 +20,8 @@ log -- Step 5: Installing NGINX Ingress Controller
 log -- Step 6: Configuring Ingress routes
 ./06-configure-ingress.sh
 
-#log -- Step 7: Replace the image with our own
-#./07-replace-image.sh
+log -- Step 7: Replace the image with our own
+./07-replace-image.sh
 
 #log -- Step 8: Use the Dalec image instead
 #./08-use-dalec.sh
