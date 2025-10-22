@@ -22,10 +22,12 @@ helm upgrade nginx-ingress-release oci://ghcr.io/nginx/charts/nginx-ingress \
   --enable-dns \
   --dependency-update \
   --install \
+  --wait \
   --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${DNS_LABEL}" \
   --set controller.image.repository="${REPOSITORY}" \
   --set controller.image.tag="${TAG}" \
-  --set controller.image.pullPolicy="${PULL_POLICY}"
+  --set controller.image.pullPolicy="${PULL_POLICY}" \
+  --set controller.telemetryReporting.enable=false
 
 log Verifying the image applied
 POD_NAME=$(k get pods -A | grep nginx-ingress-release | awk '{print $2}')
