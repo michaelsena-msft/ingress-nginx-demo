@@ -16,7 +16,6 @@ log Patching Ingress NGINX YAML
 # Apply the patch to have an Azure entry point.
 patch -i "${ROOT_DIR}/patches/add-dns-label.patch" "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
 
-info Found: ${DEFAULT_INGRESS_NGINX_LABEL}
 LABEL=${1:-}
 [ -z "$LABEL" ] && LABEL="${DEFAULT_INGRESS_NGINX_LABEL}"
 
