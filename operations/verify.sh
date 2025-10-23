@@ -6,11 +6,11 @@ echo "=== Verifying Ingress Endpoints ==="
 echo ""
 
 # Test 1: Default nginx endpoint (base FQDN)
-echo "1. Testing default nginx endpoint: http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/"
+echo "1. Testing default nginx endpoint: http://${FQDN}/"
 echo "   Expected: Should show nginx pods"
 SAMPLE_FILE_NGINX="$(mktemp)"
 for i in $(seq 1 10); do
-  curl -fsS "http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_NGINX"
+  curl -fsS "http://${FQDN}/" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_NGINX"
 done
 echo "   Observed pods:"
 sort "$SAMPLE_FILE_NGINX" | uniq -c | sed 's/^/   /'
@@ -19,11 +19,11 @@ echo "   ✓ Default nginx endpoint responding"
 echo ""
 
 # Test 2: Mars service endpoint
-echo "2. Testing Mars endpoint: http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/mars"
+echo "2. Testing Mars endpoint: http://${FQDN}/mars"
 echo "   Expected: Should show Mars pod"
 SAMPLE_FILE_MARS="$(mktemp)"
 for i in $(seq 1 5); do
-  curl -fsS "http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/mars" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_MARS"
+  curl -fsS "http://${FQDN}/mars" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_MARS"
 done
 echo "   Observed pods:"
 sort "$SAMPLE_FILE_MARS" | uniq -c | sed 's/^/   /'
@@ -38,11 +38,11 @@ echo "   ✓ Mars endpoint routing correctly"
 echo ""
 
 # Test 3: Jupiter service endpoint
-echo "3. Testing Jupiter endpoint: http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/jupiter"
+echo "3. Testing Jupiter endpoint: http://${FQDN}/jupiter"
 echo "   Expected: Should show Jupiter pod"
 SAMPLE_FILE_JUPITER="$(mktemp)"
 for i in $(seq 1 5); do
-  curl -fsS "http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/jupiter" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_JUPITER"
+  curl -fsS "http://${FQDN}/jupiter" | awk -F'</?p>' '/Pod:/{gsub(/^[ \t]+|[ \t]+$/,"",$2); print $2}' >> "$SAMPLE_FILE_JUPITER"
 done
 echo "   Observed pods:"
 sort "$SAMPLE_FILE_JUPITER" | uniq -c | sed 's/^/   /'
@@ -59,6 +59,6 @@ echo ""
 echo "=== All Ingress Endpoints Verified Successfully ==="
 echo ""
 echo "Summary:"
-echo "  • Default:  http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/ → nginx pods"
-echo "  • Mars:     http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/mars → mars pod"
-echo "  • Jupiter:  http://${DNS_LABEL}.australiaeast.cloudapp.azure.com/jupiter → jupiter pod"
+echo "  • Default:  http://${FQDN}/ → nginx pods"
+echo "  • Mars:     http://${FQDN}/mars → mars pod"
+echo "  • Jupiter:  http://${FQDN}/jupiter → jupiter pod"

@@ -2,11 +2,11 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-DALEC_REPOSITORY=$(basename ${DEFAULT_REPOSITORY})-dalec
-DALEC_TAG=${DEFAULT_TAG}
+DALEC_REPOSITORY="controller-alt"
+DALEC_VERSION=v1.13.0
 
-if ! docker image ls -f "reference=${DALEC_REPOSITORY}" | grep -q "${DALEC_TAG}" 2> /dev/null; then
-    echo "No custom dalec image found." >&2
+if ! docker image ls -f "reference=controller-alt" | grep "${DALEC_VERSION}" 2> /dev/null; then
+    echo "No custom Ingress Controller with DALEC image found." >&2
     exit 1
 fi
 
@@ -18,7 +18,10 @@ docker tag ${DALEC_REPOSITORY}:v${DALEC_TAG} ${ACR_DALEC_IMAGE}
 docker push ${ACR_DALEC_IMAGE}
 
 # Change to using the dalec image.
-./operations/configure-nginx-ingress.sh ${ACR_DALEC_REPOSITORY} ${DALEC_TAG} Always
+./operations/configure.sh ${ACR_DALEC_IMAGE}
+
+# Verify its still working
+./operations/verify.sh
 
 # Verify its still working
 ./operations/verify.sh
