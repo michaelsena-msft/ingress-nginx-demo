@@ -25,6 +25,6 @@ export DIGEST=$(digest ${IMAGE}:${TAG})
 info Digest: ${DIGEST}
 
 # Change to using the dalec image.
-RUN_AS_GROUP=0 RUN_AS_USER=0 RUN_AS_NONROOT=false ./operations/configure.sh
+RUN_AS_GROUP=1000 RUN_AS_USER=1000 ./operations/configure.sh
 
 ./operations/verify.sh
