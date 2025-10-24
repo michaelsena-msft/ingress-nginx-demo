@@ -6,7 +6,7 @@ set -eou pipefail
 
 # Get the controller location
 if [ "${MODE}" = "ingress-nginx" ]; then
-  [ "${USE_HELM}" ] && NAMESPACE=default || NAMESPACE=ingress-nginx
+  NAMESPACE=default
   CONTROLLER=ingress-nginx-controller
 elif [ "${MODE}" == "nginx-ingress" ]; then
   NAMESPACE=default

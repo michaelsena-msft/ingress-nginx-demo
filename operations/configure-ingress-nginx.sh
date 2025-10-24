@@ -2,45 +2,30 @@
 set -eou pipefail
 [ -f ./.env ] && . ./.env || . ../.env
 
-if [ "${USE_HELM}" = "true" ]; then
-    "${ROOT_DIR}"/operations/configure-ingress-nginx-helm.sh
-    exit $?
-fi
+# Note: Helm must be v3.18.4 (see: https://docs.nginx.com/nginx-ingress-controller/installation/installing-nic/installation-with-helm/#before-you-begin)
+log Configuring NGINX Ingress Controller
 
-# Download the Azure ingress-nginx deployment (see: https://kubernetes.github.io/ingress-nginx/deploy/#azure)
-log Downloading Ingress NGINX YAML
-curl -o "${INGRESS_NGINX_YAML}" https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.3/deploy/static/provider/cloud/deploy.yaml
+# Ensure PARAMS is a string accumulator (keeps backward compatible with POSIX /bin/sh)
+PARAMS=${PARAMS:-}
 
-# To create a patch, uncomment this section:
-#cp ingress-nginx.yaml ingress-nginx.yaml.unpatched
-#info Make changes to ingress-nginx.yaml.
-#info When done, enter the patch file name and hit enter "(e.g., add-customizations.patch):"
-#read PATCH_FILE
-#wait
-#diff -U 5 ingress-nginx.yaml.unpatched ingress-nginx.yaml > ${ROOT_DIR}/patches/${PATCH_FILE}
-#rm ingress-nginx.yaml.unpatched
-#exit 0
+# Append flags for any variables that are set (non-empty)
+[ -n "${REGISTRY:-}" ] && PARAMS="${PARAMS} --set controller.image.registry=${REGISTRY}"
+[ -n "${IMAGE:-}" ] && PARAMS="${PARAMS} --set controller.image.image=${IMAGE}"
+[ -n "${TAG:-}" ] && PARAMS="${PARAMS} --set controller.image.tag=${TAG}"
+[ -n "${PULL_POLICY:-}" ] && PARAMS="${PARAMS} --set controller.image.pullPolicy=${PULL_POLICY}"
+[ -n "${DIGEST:-}" ] && PARAMS="${PARAMS} --set controller.image.digest=${DIGEST}"
+[ -n "${RUN_AS_NONROOT:-}" ] && PARAMS="${PARAMS} --set controller.image.runAsNonRoot=${RUN_AS_NONROOT}"
+[ -n "${RUN_AS_USER:-}" ] && PARAMS="${PARAMS} --set controller.image.runAsUser=${RUN_AS_USER}"
+[ -n "${RUN_AS_GROUP:-}" ] && PARAMS="${PARAMS} --set controller.image.runAsGroup=${RUN_AS_GROUP}"
 
-log Patching Ingress NGINX YAML
+info Configuration overrides: ${PARAMS}
 
-# Apply the patch to have an Azure entry point.
-patch -i "${ROOT_DIR}/patches/add-dns-label.patch" "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
-
-LABEL=${1:-}
-[ -z "$LABEL" ] && LABEL="${DEFAULT_INGRESS_NGINX_LABEL}"
-
-RUN_AS_GROUP=${RUN_AS_GROUP:-}
-[ -z "$RUN_AS_GROUP" ] && export RUN_AS_GROUP="${DEFAULT_INGRESS_NGINX_RUN_AS_GROUP}"
-RUN_AS_USER=${RUN_AS_USER:-}
-[ -z "$RUN_AS_USER" ] && export RUN_AS_USER="${DEFAULT_INGRESS_NGINX_RUN_AS_USER}"
-
-log Patching Ingress NGINX to use image: ${LABEL} "(${RUN_AS_GROUP}:${RUN_AS_USER})"
-IMAGE=${LABEL} PULL_POLICY=Always envsubst < "${ROOT_DIR}/patches/controller-image.patch" | patch "${INGRESS_NGINX_YAML}" --no-backup-if-mismatch
-
-log Applying ingress-nginx
-# Apply ingress-nginx manifest with DNS label substitution
-envsubst < "${INGRESS_NGINX_YAML}" | k apply -f -
-
-# Wait for ingress-nginx deployment to be ready
-log Waiting for ingress-nginx-controller deployment
-k -n ingress-nginx rollout status deploy/ingress-nginx-controller --timeout=300s
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --create-namespace \
+  --atomic \
+  --set controller.admissionWebhooks.enabled=false \
+  --set controller.image.digestChroot="" \
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${DNS_LABEL}" \
+  ${PARAMS} \
+  --wait
