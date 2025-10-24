@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 log -- Step 1: Creating AKS cluster
 ./01-create-aks.sh

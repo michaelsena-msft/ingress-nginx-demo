@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 if ! az group list -o table | grep -q ${RESOURCE_GROUP}; then
   log Creating the resource group

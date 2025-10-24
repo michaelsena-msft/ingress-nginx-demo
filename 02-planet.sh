@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 log Applying planet
 k apply -f 02-planet.yaml

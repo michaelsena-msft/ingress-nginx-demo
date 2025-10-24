@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 log Retrieving cluster credentials for kubectl
 az aks get-credentials -g "$RESOURCE_GROUP" -n "$CLUSTER" --overwrite-existing

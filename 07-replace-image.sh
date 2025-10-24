@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 SOURCE=${DEFAULT_INGRESS_NGINX_REGISTRY}/${DEFAULT_INGRESS_NGINX_IMAGE}:${DEFAULT_INGRESS_NGINX_TAG}@${DEFAULT_INGRESS_NGINX_DIGEST}
 TARGET=${ACR_FQDN}/${DEFAULT_INGRESS_NGINX_IMAGE}:${DEFAULT_INGRESS_NGINX_TAG}

@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(dirname $(realpath $0)))/.env
 
 echo "=== Verifying Ingress Endpoints ==="
 echo ""

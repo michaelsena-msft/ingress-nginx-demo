@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 # Local kubeconfig cleanup (optional)
 k config delete-context "$CLUSTER" || true

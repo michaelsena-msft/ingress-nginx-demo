@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eou pipefail
-[ -f ./.env ] && . ./.env || . ../.env
+. $(dirname $(realpath $0))/.env
 
 log Creating ingress resource
 envsubst < 06-ingress-nginx.yaml | kubectl apply -f -
