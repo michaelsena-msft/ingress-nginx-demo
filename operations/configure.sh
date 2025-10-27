@@ -16,6 +16,7 @@ PARAMS=${PARAMS:-}
 [ -n "${DIGEST:-}" ] && PARAMS="${PARAMS} --set controller.image.digest=${DIGEST}"
 [ -n "${RUN_AS_USER:-}" ] && PARAMS="${PARAMS} --set controller.image.runAsUser=${RUN_AS_USER}"
 [ -n "${RUN_AS_GROUP:-}" ] && PARAMS="${PARAMS} --set controller.image.runAsGroup=${RUN_AS_GROUP}"
+# Required when using older Dalec builds.
 PARAMS="${PARAMS} --set controller.containerPort.http=8080"
 PARAMS="${PARAMS} --set controller.containerPort.https=8443"
 PARAMS="${PARAMS} --set controller.extraArgs.http-port=8080"
