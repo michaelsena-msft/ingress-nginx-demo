@@ -11,7 +11,9 @@ if ! docker image ls -f "reference=${IMAGE}" 2>&1 > /dev/null; then
     exit 1
 fi
 
-export TAG=$(docker image ls -f "reference=${IMAGE}" | tail -1 | awk '{print $2}')
+#Note: This dosen't retrieve the tag as expected.  Need to investigate later.  Hard code for now.
+#export TAG=$(docker image ls -f "reference=${IMAGE}" | tail -1 | awk '{print $2}')
+export TAG=v1.13.3
 SOURCE=${IMAGE}:${TAG}
 TARGET=${ACR_FQDN}/${IMAGE}:${TAG}
 

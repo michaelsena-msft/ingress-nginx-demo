@@ -23,5 +23,6 @@ log -- Step 6: Configuring Ingress routes
 log -- Step 7: Replace the image with our own
 ./07-replace-image.sh
 
-#log -- Step 8: Use the Dalec image instead
+log -- Step 8: Use the Dalec image instead
+./build-dalec.sh
 ./08-use-dalec.sh
